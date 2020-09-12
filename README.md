@@ -5,10 +5,10 @@ A classic snake game.
 
 <a href="https://ultimatezachgrafton.github.io/clockadoodle/">Try it here!</a> 
 
-Navigate your snake through the perilous abyss and see how many apples you can eat. There are three different difficulties:
-Easy - if your snake hits a wall, they choose a different direction and keep on grooving.
-Medium - if your snake hits a wall, game over.
-Hard - a bomb is added to the canvas. If your snake touches it, game over.
+Navigate your snake through the perilous abyss and see how many apples you can eat. There are three different difficulties:<br>
+Easy - if your snake hits a wall, they choose a different direction and keep on grooving.<br>
+Medium - if your snake hits a wall, game over.<br>
+Hard - a bomb is added to the canvas. If your snake touches it, game over.<br>
 You may switch between these difficulties at whim, but there is no way to clear a bomb once it has been planted.
 
 <b>Summary</b><br>
