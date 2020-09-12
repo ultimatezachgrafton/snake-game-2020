@@ -1,7 +1,7 @@
 # snake-game-2020
 A classic snake game.
 
-<img src="https://github.com/ultimatezachgrafton/snake-game-2020/blob/master/snake-game-img.png">
+<img src="https://github.com/ultimatezachgrafton/snake-game-2020/blob/master/snakegame-img.png">
 
 <a href="https://ultimatezachgrafton.github.io/clockadoodle/">Try it here!</a> Navigate your snake through the perilous abyss and see how many apples you can eat.
 
