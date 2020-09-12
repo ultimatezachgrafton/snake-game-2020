@@ -19,7 +19,6 @@ let difficultyHard = { name: 'hard', status: 'inactive' };
 let currentDirection = 'right';
 let isNewFruitNeeded = true;
 let isNewBombNeeded = false;
-let isDeleteBombProtocolActive = false;
 let isNewGame = true;
 
 window.onload = function () {
@@ -279,7 +278,6 @@ document.getElementById('difficulty-hard').addEventListener('click', function ()
         difficultyHard.status = 'active';
         document.getElementById('difficulty-hard').innerHTML = '<u>Hard</u>';
         isNewBombNeeded = true;
-        console.log(isNewBombNeeded);
         if (difficultyEasy.status === 'active') {
             difficultyEasy.status = 'inactive';
             document.getElementById('difficulty-easy').innerHTML = 'Easy';
@@ -339,5 +337,3 @@ function onKeyDown(event) {
         }
     }
 }
-
-// find way to persist difficulty between games
