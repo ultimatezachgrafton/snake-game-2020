@@ -1,3 +1,21 @@
+#header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0px 300px 0px 300px;
+}
+
 #apple-counter {
+    display: flex;
     text-align: center;
+}
+
+#difficulty-select {
+    display:flex;
+    text-align: right;
+}
+
+#game-canvas {
+    display:block;
+    margin:auto;
 }
