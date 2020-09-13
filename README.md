@@ -3,7 +3,7 @@ A classic snake game.
 
 <img src="https://github.com/ultimatezachgrafton/snake-game-2020/blob/master/snakegame-img.png">
 
-<a href="https://ultimatezachgrafton.github.io/clockadoodle/">Try it here!</a> 
+<a href="https://ultimatezachgrafton.github.io/snake-game-2020/">Try it here!</a> 
 
 Navigate your snake through the perilous abyss and see how many apples you can eat. There are three different difficulties:<br>
 Easy - if your snake hits a wall, they choose a different direction and keep on grooving.<br>
