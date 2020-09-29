@@ -1,22 +1,29 @@
 const canvas = document.getElementById('game-canvas');
 let canvasContext = canvas.getContext('2d');
-let snakeX = 60;
-let snakeY = 0;
-let snakeHead = [snakeX, snakeY];
-let snakeBody = [];
-let snake = [snakeHead];
-let snakeBodyLength = 3;
-let prevCoordinatesX = [40, 20];
-let prevCoordinatesY = [0, 0, 0];
-let fruitX;
-let fruitY;
-let bombX;
-let bombY;
+
+let snake = {
+    body: [
+        { x: 60, y: 0 },
+        { x: 60, y: 0 },
+        { x: 60, y: 0 }
+    ],
+    currentDirection: 'right'
+}
+
+let fruit = {
+    x: undefined,
+    y: undefined
+}
+
+let bomb = {
+    x: undefined,
+    y: undefined
+}
+
 let appleCounter = 0;
 let difficultyEasy = { name: 'easy', status: 'inactive' };
 let difficultyMedium = { name: 'medium', status: 'active' };
 let difficultyHard = { name: 'hard', status: 'inactive' };
-let currentDirection = 'right';
 let isNewFruitNeeded = true;
 let isNewBombNeeded = false;
 let isNewGame = true;
@@ -31,37 +38,39 @@ window.onload = function () {
 }
 
 function moveAll() {
-    trackPrevCoordinates();
+    for (let i = snake.body.length - 1; i > 0; i--) {
+        snake.body[i] = Object.assign({}, snake.body[i - 1]);
+    }
 
-    if (currentDirection === 'right') {
-        if (snakeX === 880) {
+    if (snake.currentDirection === 'right') {
+        if (snake.body[0].x === 880) {
             return;
         } else {
-            snakeX = snakeX + 20;
+            snake.body[0].x = snake.body[0].x + 20;
             return;
         }
     }
-    if (currentDirection === 'left') {
-        if (snakeX === 0) {
+    if (snake.currentDirection === 'left') {
+        if (snake.body[0].x === 0) {
             return;
         } else {
-            snakeX = snakeX - 20;
+            snake.body[0].x = snake.body[0].x - 20;
             return;
         }
     }
-    if (currentDirection === 'up') {
-        if (snakeY === 0) {
+    if (snake.currentDirection === 'up') {
+        if (snake.body[0].y === 0) {
             return;
         } else {
-            snakeY = snakeY - 20;
+            snake.body[0].y = snake.body[0].y - 20;
             return;
         }
     }
-    if (currentDirection === 'down') {
-        if (snakeY === 780) {
+    if (snake.currentDirection === 'down') {
+        if (snake.body[0].y === 780) {
             return;
         } else {
-            snakeY = snakeY + 20;
+            snake.body[0].y = snake.body[0].y + 20;
             return;
         }
     }
@@ -75,22 +84,22 @@ function drawAll() {
         canvasContext.fillRect(0, 0, 20, 20);
         isNewGame = false;
     } else {
-        canvasContext.fillRect(snakeX, snakeY, 20, 20);
-        for (let i = 0; i < snakeBodyLength; i++) {
-            canvasContext.fillRect(prevCoordinatesX[i], prevCoordinatesY[i], 20, 20);
+        canvasContext.fillRect(snake.body[0].x, snake.body[0].y, 20, 20);
+        for (let i = 0; i < snake.body.length; i++) {
+            canvasContext.fillRect(snake.body[i].x, snake.body[i].y, 20, 20);
         }
     }
     if (isNewFruitNeeded) {
         createNewFruitLocation();
     } else {
         canvasContext.fillStyle = 'red';
-        canvasContext.fillRect(fruitX, fruitY, 20, 20);
+        canvasContext.fillRect(fruit.x, fruit.y, 20, 20);
     }
     if (isNewBombNeeded) {
         createNewBombLocation();
     } else {
         canvasContext.fillStyle = 'yellow';
-        canvasContext.fillRect(bombX, bombY, 20, 20);
+        canvasContext.fillRect(bomb.x, bomb.y, 20, 20);
     }
 
     document.getElementById('apple-counter').innerHTML = "Apples: " + appleCounter;
@@ -99,19 +108,19 @@ function drawAll() {
 function checkCollision() {
     checkBorders();
 
-    if (snakeX === fruitX && snakeY === fruitY) {
+    if (snake.body[0].x === fruit.x && snake.body[0].y === fruit.y) {
         createNewFruitLocation();
         growSnake();
         appleCounter++;
     }
 
-    if (snakeX === bombX && snakeY === bombY) {
+    if (snake.body[0].x === bomb.x && snake.body[0].y === bomb.y) {
         gameOver();
     }
 
-    for (let i = 0; i <= snakeBodyLength; i++) {
-        if (snakeX === prevCoordinatesX[i]) {
-            if (snakeY === prevCoordinatesY[i]) {
+    for (let i = 1; i < snake.body.length; i++) {
+        if (snake.body[0].x === snake.body[i].x) {
+            if (snake.body[0].y === snake.body[i].y) {
                 gameOver();
             }
         }
@@ -126,16 +135,16 @@ function gameOver() {
 
 function createNewFruitLocation() {
     // check snake location for fruit generation
-    fruitX = createLocationX();
-    fruitY = createLocationY();
-    for (let i = 0; i <= snakeBodyLength; i++) {
-        if (fruitX === prevCoordinatesX[i]) {
-            if (fruitY === prevCoordinatesY[i]) {
+    fruit.x = createLocationX();
+    fruit.y = createLocationY();
+    for (let i = 0; i < snake.body.length; i++) {
+        if (fruit.x === snake.body[i].x) {
+            if (fruit.y === snake.body[i].y) {
                 createNewFruitLocation();
             }
         } else {
             canvasContext.fillStyle = 'red';
-            canvasContext.fillRect(fruitX, fruitY, 20, 20);
+            canvasContext.fillRect(fruit.x, fruit.y, 20, 20);
             isNewFruitNeeded = false;
         }
     }
@@ -151,16 +160,16 @@ function createLocationY() {
 
 function createNewBombLocation() {
     // check snake location for fruit generation
-    bombX = createLocationX();
-    bombY = createLocationY();
-    for (let i = 0; i <= snakeBodyLength; i++) {
-        if (bombX === prevCoordinatesX[i]) {
-            if (bombY === prevCoordinatesY[i]) {
+    bomb.x = createLocationX();
+    bomb.y = createLocationY();
+    for (let i = 0; i <= snake.body.length; i++) {
+        if (bomb.x === snake.body[i].x) {
+            if (bomb.y === snake.body[i].y) {
                 createNewBombLocation();
             }
         } else {
             canvasContext.fillStyle = 'yellow';
-            canvasContext.fillRect(bombX, bombY, 20, 20);
+            canvasContext.fillRect(bomb.x, bomb.y, 20, 20);
             isNewBombNeeded = false;
         }
     }
@@ -168,75 +177,72 @@ function createNewBombLocation() {
 
 function checkBorders() {
     if (difficultyEasy.status === 'active') {
-        if (currentDirection === 'left' || currentDirection === 'right') {
-            if (snakeX === 880 && snakeY === 0) {
-                currentDirection = 'down';
+        if (snake.currentDirection === 'left' || snake.currentDirection === 'right') {
+            if (snake.body[0].x === 880 && snake.body[0].y === 0) {
+                snake.currentDirection = 'down';
                 return;
             }
-            if (snakeX === 880 && snakeY === 780) {
-                currentDirection = 'up';
+            if (snake.body[0].x === 880 && snake.body[0].y === 780) {
+                snake.currentDirection = 'up';
                 return;
             }
-            if (snakeX === 0 && snakeY === 0) {
-                currentDirection = 'down';
+            if (snake.body[0].x === 0 && snake.body[0].y === 0) {
+                snake.currentDirection = 'down';
                 return;
             }
-            if (snakeX === 0 && snakeY === 780) {
-                currentDirection = 'up';
+            if (snake.body[0].x === 0 && snake.body[0].y === 780) {
+                snake.currentDirection = 'up';
                 return;
             }
 
-            if (snakeX === 0 || snakeX === 880) {
+            if (snake.body[0].x === 0 || snake.body[0].x === 880) {
                 if ((Math.floor(Math.random() * (1 + 2 - 1)) + 1) > 1) {
-                    currentDirection = 'up';
+                    snake.currentDirection = 'up';
                 } else {
-                    currentDirection = 'down';
+                    snake.currentDirection = 'down';
                 }
             }
             return;
         }
 
-        if (currentDirection === 'up' || currentDirection === 'down') {
-            if (snakeX === 0 && snakeY === 0) {
-                currentDirection = 'right';
+        if (snake.currentDirection === 'up' || snake.currentDirection === 'down') {
+            if (snake.body[0].x === 0 && snake.body[0].y === 0) {
+                snake.currentDirection = 'right';
                 return;
             }
-            if (snakeX === 880 && snakeY === 0) {
-                currentDirection = 'left';
+            if (snake.body[0].x === 880 && snake.body[0].y === 0) {
+                snake.currentDirection = 'left';
                 return;
             }
-            if (snakeX === 0 && snakeY === 780) {
-                currentDirection = 'right';
+            if (snake.body[0].x === 0 && snake.body[0].y === 780) {
+                snake.currentDirection = 'right';
                 return;
             }
-            if (snakeX === 880 && snakeY === 780) {
-                currentDirection = 'left';
+            if (snake.body[0].x === 880 && snake.body[0].y === 780) {
+                snake.currentDirection = 'left';
                 return;
             }
 
-            if (snakeY === 0 || snakeY === 780) {
+            if (snake.body[0].y === 0 || snake.body[0].y === 780) {
                 if ((Math.floor(Math.random() * (1 + 2 - 1)) + 1) > 1) {
-                    currentDirection = 'left';
+                    snake.currentDirection = 'left';
                 } else {
-                    currentDirection = 'right';
+                    snake.currentDirection = 'right';
                 }
                 return;
             }
         }
     } else {
-        if (snakeX === -20 || snakeX === 900 || snakeY === -20 || snakeY === 800) {
+        if (snake.body[0].x === -20 || snake.body[0].x === 900 || snake.body[0].y === -20 || snake.body[0].y === 800) {
             gameOver();
         }
     }
 }
 
 function growSnake() {
-    snakeBodyLength++;
-}
-
-function trackPrevCoordinates() {
-    prevCoordinatesX.unshift(snakeX);
-    prevCoordinatesY.unshift(snakeY);
+    const snakeTail = snake.body[snake.body.length - 1];
+    const tailCopy = Object.assign({}, snakeTail);
+    snake.body.push(tailCopy);
 }
 
 document.getElementById('difficulty-easy').addEventListener('click', function () {
@@ -301,39 +307,39 @@ function onKeyDown(event) {
 
     // right
     if (keyPressed === 39) {
-        if (snakeX === 880 || currentDirection === 'left' || currentDirection === 'right') {
+        if (snake.body[0].x === 880 || snake.currentDirection === 'left' || snake.currentDirection === 'right') {
             return;
         } else {
-            currentDirection = 'right';
+            snake.currentDirection = 'right';
             return;
         }
     }
 
     // left
     if (keyPressed === 37) {
-        if (snakeX === 0 || currentDirection === 'right' || currentDirection === 'left') {
+        if (snake.body[0].x === 0 || snake.currentDirection === 'right' || snake.currentDirection === 'left') {
             return;
         } else {
-            currentDirection = 'left';
+            snake.currentDirection = 'left';
             return;
         }
     }
 
     // up
     if (keyPressed === 38) {
-        if (snakeY === 0 || currentDirection === 'down' || currentDirection === 'up') {
+        if (snake.body[0].y === 0 || snake.currentDirection === 'down' || snake.currentDirection === 'up') {
             return;
         } else {
-            currentDirection = 'up';
+            snake.currentDirection = 'up';
         }
     }
 
     // down
     if (keyPressed === 40) {
-        if (snakeY === 780 || currentDirection === 'up' || currentDirection === 'down') {
+        if (snake.body[0].y === 780 || snake.currentDirection === 'up' || snake.currentDirection === 'down') {
             return;
         } else {
-            currentDirection = 'down';
+            snake.currentDirection = 'down';
         }
     }
 }
